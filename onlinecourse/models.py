@@ -107,7 +107,7 @@ class Question(models.Model):
         Course,
         on_delete=models.CASCADE
     )
-    question_text = models.CharField(max_length=200)
+    question_text = models.CharField(max_length=200, default="")
     grade = models.IntegerField(default=50)
 
     def __str__(self):
@@ -132,7 +132,7 @@ class Choice(models.Model):
         Question,
         on_delete=models.CASCADE
     )
-    choice_text = models.CharField(max_length=200)
+    choice_text = models.CharField(max_length=200, default="")
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):

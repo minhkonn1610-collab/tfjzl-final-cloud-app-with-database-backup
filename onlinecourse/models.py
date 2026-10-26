@@ -111,7 +111,7 @@ class Question(models.Model):
     grade = models.IntegerField(default=50)
 
     def __str__(self):
-        return self.question_text
+        return "Question: " + self.question_text
 
     def is_get_score(self, selected_ids):
         all_answers = self.choice_set.filter(
@@ -132,7 +132,7 @@ class Choice(models.Model):
         Question,
         on_delete=models.CASCADE
     )
-    choice_text = models.CharField(max_length=200, default="")
+    choice_text = models.CharField(max_length=100)
     is_correct = models.BooleanField(default=False)
 
     def __str__(self):

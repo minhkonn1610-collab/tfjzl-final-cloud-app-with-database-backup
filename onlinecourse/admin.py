@@ -1,75 +1,51 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+from django.contrib import admin
 
-    <title>{{ course.name }}</title>
+from .models import (
+    Course,
+    Lesson,
+    Instructor,
+    Learner,
+    Question,
+    Choice,
+    Submission,
+)
 
-    <link
-        rel="stylesheet"
-        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-    >
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</head>
 
-<body>
-    <nav class="navbar navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">
-                Home
-            </a>
+class LessonInline(admin.StackedInline):
+    model = Lesson
+    extra = 5
 
-            <div class="navbar-nav ml-auto">
-                {% if user.is_authenticated %}
-                    <span class="navbar-text mr-3">
-                        {{ user.first_name }} ({{ user.username }})
-                    </span>
-                    <a class="nav-link" href="{% url 'onlinecourse:logout' %}">
-                        Logout
-                    </a>
-                {% else %}
-                    <a class="nav-link" href="{% url 'onlinecourse:login' %}">
-                        Login
-                    </a>
-                    <a class="nav-link" href="{% url 'onlinecourse:registration' %}">
-                        Sign Up
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
 
-    <main class="container mt-4">
-        <div class="jumbotron">
-            <h1 class="display-4">{{ course.name }}</h1>
-            <p class="lead">{{ course.description }}</p>
-        </div>
+class ChoiceInline(admin.StackedInline):
+    model = Choice
+    extra = 2
 
-        <section class="course-lessons">
-            <h2 class="mb-3">Course Lessons</h2>
 
-            {% for lesson in course.lesson_set.all %}
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}
-                        </h5>
-                    </div>
+class QuestionInline(admin.StackedInline):
+    model = Question
+    extra = 2
 
-                    <div class="card-body">
-                        <p class="card-text">{{ lesson.content }}</p>
-                    </div>
-                </div>
-            {% empty %}
-                <div class="alert alert-info">
-                    No lessons are available for this course.
-                </div>
-            {% endfor %}
-        </section>
-    </main>
-</body>
-</html>
+
+class CourseAdmin(admin.ModelAdmin):
+    inlines = [LessonInline, QuestionInline]
+    list_display = ("name", "pub_date")
+    list_filter = ["pub_date"]
+    search_fields = ["name", "description"]
+
+
+class QuestionAdmin(admin.ModelAdmin):
+    inlines = [ChoiceInline]
+    list_display = ["question_text"]
+
+
+class LessonAdmin(admin.ModelAdmin):
+    list_display = ["title"]
+
+
+admin.site.register(Course, CourseAdmin)
+admin.site.register(Lesson, LessonAdmin)
+admin.site.register(Instructor)
+admin.site.register(Learner)
+admin.site.register(Question, QuestionAdmin)
+admin.site.register(Choice)
+admin.site.register(Submission)
